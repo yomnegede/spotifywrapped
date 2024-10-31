@@ -1,25 +1,17 @@
-import logo from './logo.svg';
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LandingPage from './LandingPage';
+import SpotifyCallback from './SpotifyCallback';
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    axios.get('http://localhost:8000/api/hello/')
-      .then(response => {
-        setMessage(response.data.message);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the data!', error);
-      });
-  }, []);
-
-  return (
-    <div className="App">
-      <h1>{message}</h1>
-    </div>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/callback" element={<SpotifyCallback />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
+

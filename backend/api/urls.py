@@ -1,6 +1,7 @@
+# urls.py
 from django.urls import path
-from .views import hello_world
+from . import views
 
 urlpatterns = [
-    path('hello/', hello_world),
+    path('spotify-auth', views.spotify_auth, name='spotify_auth'),
 ]

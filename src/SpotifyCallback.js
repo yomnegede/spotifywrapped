@@ -5,28 +5,38 @@ const SpotifyCallback = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Extract the authorization code from the URL
         const query = new URLSearchParams(window.location.search);
         const code = query.get("code");
 
         if (code) {
-            // Send the code to your backend server to exchange for an access token
-            fetch("/api/spotify-auth", {
+            fetch("http://127.0.0.1:8000/api/spotify-auth", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ code })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
             .then(data => {
                 if (data.access_token) {
-                    // Save the token in local storage or context (depending on your setup)
+                    // Store the access token in localStorage
                     localStorage.setItem("spotify_access_token", data.access_token);
-                    navigate("/"); // Redirect back to the main page or dashboard
+                    console.log("Access token stored:", data.access_token);
+                    navigate("/profile"); // Redirect to ProfilePage after successful login
+                } else {
+                    console.error("No access token received in response");
                 }
             })
-            .catch(error => console.error("Error exchanging code for token:", error));
+            .catch(error => {
+                console.error("Error exchanging code for token:", error);
+                navigate("/"); // Redirect to landing page on error
+            });
+
+            // Clear code from the URL after using it
+            window.history.replaceState({}, document.title, "/callback");
         }
     }, [navigate]);
 

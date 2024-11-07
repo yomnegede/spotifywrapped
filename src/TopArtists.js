@@ -69,13 +69,13 @@ const TopArtists = () => {
             {/* Title with adjusted margin-top */}
             <h1 className="text-5xl font-extrabold text-lime-300 mt-2 mb-5 drop-shadow-lg">My Top Artists</h1>
 
-            {/* Centered Top Artist Image with Notes on Left and Right */}
+            {/* Centered Top Artist Image with Fade-in Animation and Notes */}
             <div className="relative flex flex-col items-center mt-6 mb-2">
                 {artists[0] && (
                     <img 
                         src={artists[0].imageUrl} 
                         alt={artists[0].name} 
-                        className="w-60 h-60 mb-1 shadow-lg object-cover rounded-lg relative z-10"
+                        className="w-60 h-60 mb-1 shadow-lg object-cover rounded-lg relative z-10 animate-fadeIn"
                     />
                 )}
                 {/* Musical Notes Positioned to the Left and Right of the Image with Wider Spacing */}
@@ -141,6 +141,19 @@ const TopArtists = () => {
             </div>
 
             <style jsx>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 1.5s ease-in-out forwards;
+                }
                 @keyframes drop {
                     0% {
                         transform: translateY(-100%);

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const ProfilePage = () => {
     const [userProfile, setUserProfile] = useState(null);
     const [isDarkMode, setIsDarkMode] = useState(true);
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate();
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
@@ -36,27 +36,39 @@ const ProfilePage = () => {
         navigate("/TopArtists"); // Navigate to the TopArtists page
     };
 
+    const handleAboutUs = () => {
+        navigate("/about"); // Navigate to the About Us page
+    };
+
     return (
-        <div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} flex flex-col items-center justify-center h-screen`}>
-            {/* Log Out Button on the Top Left */}
+        <div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} flex flex-col items-center justify-center h-screen p-5`}>
+            {/* Log Out Button */}
             <button
-                className="absolute top-5 left-5 bg-red-600 text-white px-4 py-2 rounded-full"
+                className="absolute top-5 left-5 bg-red-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-red-700 transition"
                 onClick={handleLogout}
             >
                 Log out
             </button>
 
-            {/* Theme Toggle Switch */}
-            <button
-                className="absolute top-5 right-5 bg-purple-600 text-white px-4 py-2 rounded-full"
-                onClick={toggleTheme}
-            >
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-            </button>
+            {/* Theme Toggle and About Us Buttons */}
+            <div className="absolute top-5 right-5 flex space-x-4">
+                <button
+                    className="bg-purple-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-purple-700 transition"
+                    onClick={toggleTheme}
+                >
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
+                <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-700 transition"
+                    onClick={handleAboutUs}
+                >
+                    About
+                </button>
+            </div>
 
-            <h1 className="text-4xl font-bold mb-4">Your Spotify Profile</h1>
+            <h1 className="text-5xl font-bold mb-6 drop-shadow-lg">Your Spotify Profile</h1>
             
-            <div className="border-4 border-purple-600 rounded-lg p-6 flex flex-col items-center bg-opacity-50">
+            <div className="bg-white text-black rounded-lg p-8 shadow-lg transform transition hover:scale-105 hover:shadow-2xl w-96">
                 {userProfile ? (
                     <div className="text-center">
                         <h2 className="text-3xl font-bold mb-4">
@@ -66,14 +78,14 @@ const ProfilePage = () => {
                             <img
                                 src={userProfile.images[0].url}
                                 alt="User Profile"
-                                className="w-32 h-32 rounded-full mb-6"
+                                className="w-32 h-32 rounded-full mb-6 mx-auto shadow-md"
                             />
                         )}
-                        <p className="text-lg">Email: {userProfile.email}</p>
-                        <p className="text-lg">Country: {userProfile.country}</p>
+                        <p className="text-lg mb-2">Email: {userProfile.email}</p>
+                        <p className="text-lg mb-6">Country: {userProfile.country}</p>
                         {/* View Spotify Wrapped Button */}
                         <button
-                            className="mt-6 bg-green-500 text-white px-6 py-2 rounded-lg text-lg hover:opacity-80"
+                            className="bg-green-500 text-white px-6 py-2 rounded-full shadow-md hover:bg-green-600 transition"
                             onClick={handleSpotifyWrapped}
                         >
                             View Spotify Wrapped

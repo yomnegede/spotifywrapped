@@ -35,15 +35,12 @@ const TopSongs = () => {
 
     return (
         <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-br from-blue-400 to-blue-600 p-5">
-            {/* Log Out Button on the Top Left */}
             <button 
                 onClick={handleLogout} 
                 className="absolute top-5 left-5 bg-blue-600 text-white px-4 py-2 rounded-full"
             >
                 Log out
             </button>
-
-            {/* Profile Button on the Top Right */}
             <button
                 onClick={() => navigate('/profile')}
                 className="absolute top-5 right-5 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition"
@@ -54,7 +51,6 @@ const TopSongs = () => {
                     className="w-6 h-6"
                 />
             </button>
-
             <h1 className="text-5xl text-white mb-10 font-bold drop-shadow-lg">Top Songs</h1>
             {songs.length > 0 ? (
                 songs.map((song, index) => (
@@ -73,12 +69,20 @@ const TopSongs = () => {
             ) : (
                 <p className="text-white text-lg">Loading top songs...</p>
             )}
-            <button 
-                onClick={() => navigate('/TopArtists')} 
-                className="mt-8 bg-white text-blue-600 px-8 py-3 rounded-lg text-xl hover:bg-blue-600 hover:text-white transition"
-            >
-                Back
-            </button>
+            <div className="flex space-x-4 mt-8">
+                <button 
+                    onClick={() => navigate('/TopArtists')} 
+                    className="bg-white text-blue-600 px-8 py-3 rounded-lg text-xl hover:bg-blue-600 hover:text-white transition"
+                >
+                    Back
+                </button>
+                <button 
+                    onClick={() => navigate('/TopGenres')} 
+                    className="bg-white text-blue-600 px-8 py-3 rounded-lg text-xl hover:bg-blue-600 hover:text-white transition"
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 };

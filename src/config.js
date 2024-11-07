@@ -3,6 +3,8 @@ const redirectUri = "http://localhost:3000/callback";
 const scopes = [
     "user-read-private",
     "user-read-email",
+    "user-library-read",
+    "user-read-recently-played",
     "user-top-read"
 ];
 

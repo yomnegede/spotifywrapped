@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import spotifyImage from './images/spotify.png';
-import { authUrl } from './config';
+import PinkSpotifyLogo from './images/PinkSpotifyLogo.png';
+
+const clientId = "your_actual_spotify_client_id";  // Replace with the actual client ID
+const redirectUri = "http://localhost:3000/callback";  // Set to your callback URL
+const scopes = "user-read-private user-read-email";  // Required scopes
+
+const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
 
 const LandingPage = () => {
     const [isDarkMode, setIsDarkMode] = useState(true);
-    const [userProfile, setUserProfile] = useState(null); // State for user profile
+    const [userProfile, setUserProfile] = useState(null);
 
     useEffect(() => {
-        // Clear the token on initial load to force login every time
-        localStorage.removeItem("spotify_access_token");
+        const hash = window.location.hash;
+        let token = localStorage.getItem("spotify_access_token");
 
-        // Check if there's a token in localStorage in case of immediate re-login
-        const token = localStorage.getItem("spotify_access_token");
+        if (!token && hash) {
+            token = new URLSearchParams(hash.replace('#', '?')).get('access_token');
+            if (token) {
+                localStorage.setItem("spotify_access_token", token);
+                window.location.hash = "";  // Clear the URL hash
+            }
+        }
+
         if (token) {
-            // Fetch user profile information from Spotify
             fetch("https://api.spotify.com/v1/me", {
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -31,66 +41,84 @@ const LandingPage = () => {
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
     const handleSpotifyLogin = () => {
-        // Redirect to Spotify's authorization URL
         window.location.href = authUrl;
     };
 
     const handleLogout = () => {
-        // Clear token and reset user profile
         localStorage.removeItem("spotify_access_token");
         setUserProfile(null);
     };
 
     return (
-        <div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} flex flex-col items-center justify-center h-screen`}>
-            {/* Theme Toggle Switch */}
-            <button
-                className="absolute top-5 right-5 bg-purple-600 text-white px-4 py-2 rounded-full"
-                onClick={toggleTheme}
-            >
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-            </button>
+        <div className={`relative ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-[#D3FD70] text-black'} h-screen flex flex-col items-center`}>
+            <style>
+                {`
+                    @keyframes verticalMarquee {
+                        0% { transform: translateY(100%); }
+                        100% { transform: translateY(-100%); }
+                    }
 
-            <h1 className="text-3xl font-bold mb-4">Spotify Wrapped</h1>
-            
-            <div className="border-4 border-purple-600 rounded-lg p-6 flex flex-col items-center bg-opacity-50">
-                <img src={spotifyImage} alt="Spotify Wrapped" className="w-48 mb-4" />
-                
-                {userProfile ? (
-                    // Display user profile information if logged in
-                    <div className="text-center">
-                        <h2 className="text-2xl font-semibold mb-2">Welcome, {userProfile.display_name}!</h2>
-                        {userProfile.images && userProfile.images.length > 0 && (
-                            <img
-                                src={userProfile.images[0].url}
-                                alt="User Profile"
-                                className="w-24 h-24 rounded-full mb-4"
-                            />
-                        )}
-                        <p>Email: {userProfile.email}</p>
-                        <p>Country: {userProfile.country}</p>
-                        <button
-                            className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg text-lg hover:opacity-80"
-                            onClick={handleLogout}
-                        >
-                            Log out
-                        </button>
-                    </div>
-                ) : (
-                    // Show login button if not logged in
-                    <div className="text-center">
-                        <p className="text-lg mb-4">
-                            Let's look at what you've been listening to this year!
-                        </p>
-                        <button
-                            className="mt-6 bg-purple-600 text-white px-6 py-2 rounded-lg text-lg hover:opacity-80"
-                            onClick={handleSpotifyLogin}
-                        >
-                            Log in with Spotify
-                        </button>
-                    </div>
-                )}
+                    .animate-verticalMarquee {
+                        display: flex;
+                        flex-direction: column;
+                        animation: verticalMarquee 80s linear infinite;
+                        gap: 2rem;
+                    }
+                `}
+            </style>
+
+            <div className="absolute top-5 left-5 flex items-center space-x-4">
+                <img src={PinkSpotifyLogo} alt="Spotify" className="w-16 h-16" />
+                <h1 className="text-3xl font-bold text-[#FF97DA]">Spotify</h1>
+                <button className="bg-[#FE7CD0] text-black px-4 py-2 rounded-full font-bold" onClick={toggleTheme}>
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
+                <button 
+                    className="bg-[#FE7CD0] text-black px-4 py-2 rounded-full font-bold" 
+                    onClick={userProfile ? handleLogout : handleSpotifyLogin}
+                >
+                    {userProfile ? 'Log Out' : 'Log In with Spotify'}
+                </button>
             </div>
+
+            {/* Continuously scrolling "Wrapped" text from bottom to top, slightly aligned to the right */}
+            <div className="absolute bottom-0 w-full overflow-hidden h-screen flex items-center justify-end pr-4 pointer-events-none">
+                <div className="animate-verticalMarquee flex flex-col items-center">
+                    {Array(100).fill().map((_, index) => (
+                        <h1 
+                            key={`first-${index}`} 
+                            className="font-bold" 
+                            style={{ fontSize: '8vw', color: index % 2 === 0 ? '#000' : '#FF97DA', textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
+                        >
+                            Wrapped
+                        </h1>
+                    ))}
+                    {Array(100).fill().map((_, index) => (
+                        <h1 
+                            key={`second-${index}`} 
+                            className="font-bold" 
+                            style={{ fontSize: '8vw', color: index % 2 === 0 ? '#000' : '#FF97DA', textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}
+                        >
+                            Wrapped
+                        </h1>
+                    ))}
+                </div>
+            </div>
+
+            {userProfile && (
+                <div className={`absolute top-20 right-20 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} p-6 rounded-lg text-center shadow-lg`}>
+                    <h2 className="text-2xl font-semibold mb-2">Welcome, {userProfile.display_name}!</h2>
+                    {userProfile.images && userProfile.images.length > 0 && (
+                        <img
+                            src={userProfile.images[0].url}
+                            alt="User Profile"
+                            className="w-24 h-24 rounded-full mx-auto mb-4"
+                        />
+                    )}
+                    <p>Email: {userProfile.email}</p>
+                    <p>Country: {userProfile.country}</p>
+                </div>
+            )}
         </div>
     );
 };

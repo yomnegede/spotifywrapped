@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopSongs = () => {
     const navigate = useNavigate();
-    const [songs, setSongs] = useState([]); // State to hold top songs
+    const {topSongs, setTopSongs} = useContext(SpotifyContext); // State to hold top songs
 
     useEffect(() => {
         const token = localStorage.getItem("spotify_access_token");
@@ -22,7 +23,7 @@ const TopSongs = () => {
                     title: song.name,
                     imageUrl: song.album.images[0]?.url || "https://via.placeholder.com/100"
                 }));
-                setSongs(songData);
+                setTopSongs(songData);
             })
             .catch(error => console.error("Error fetching top songs:", error));
         }
@@ -52,8 +53,8 @@ const TopSongs = () => {
                 />
             </button>
             <h1 className="text-5xl text-white mb-10 font-bold drop-shadow-lg">Top Songs</h1>
-            {songs.length > 0 ? (
-                songs.map((song, index) => (
+            {topSongs.length > 0 ? (
+                topSongs.map((song, index) => (
                     <div 
                         key={index} 
                         className="flex items-center bg-white rounded-lg p-6 mb-6 w-96 shadow-lg transition transform hover:-translate-y-2 hover:shadow-2xl"

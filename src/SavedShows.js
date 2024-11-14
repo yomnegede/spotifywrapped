@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SpotifyContext from './SpotifyContext';
 
 const SavedShows = () => {
     const navigate = useNavigate();
-    const [shows, setShows] = useState([]);
+    const {savedShows, setSavedShows} = useContext(SpotifyContext);
 
     useEffect(() => {
         const token = localStorage.getItem("spotify_access_token");
@@ -22,7 +23,7 @@ const SavedShows = () => {
                     name: item.show.name,
                     imageUrl: item.show.images[0]?.url || "https://via.placeholder.com/100"
                 }));
-                setShows(showData);
+                setSavedShows(showData);
             })
             .catch(error => console.error("Error fetching saved shows:", error));
         }
@@ -42,8 +43,8 @@ const SavedShows = () => {
                 <img src="https://img.icons8.com/ios-glyphs/30/000000/user.png" alt="Profile" className="w-6 h-6" />
             </button>
             <h1 className="text-5xl text-white mb-10 font-bold drop-shadow-lg">Saved Shows</h1>
-            {shows.length > 0 ? (
-                shows.map((show, index) => (
+            {savedShows.length > 0 ? (
+                savedShows.map((show, index) => (
                     <div key={index} className="flex items-center bg-white rounded-lg p-6 mb-6 w-96 shadow-lg transition transform hover:-translate-y-2 hover:shadow-2xl">
                         <img src={show.imageUrl} alt={show.name} className="w-20 h-20 rounded-full mr-6" />
                         <p className="text-2xl font-semibold">{show.name}</p>

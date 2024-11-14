@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SpotifyContext from './SpotifyContext';
 
 const FunFact = () => {
     const navigate = useNavigate();
-    const [funFact, setFunFact] = useState("Loading a fun fact...");
+    const {funFact,setFunFact} = useContext(SpotifyContext);
 
     useEffect(() => {
         const token = localStorage.getItem("spotify_access_token");

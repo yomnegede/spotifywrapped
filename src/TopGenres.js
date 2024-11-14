@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SpotifyContext from './SpotifyContext';
 
 const TopGenres = () => {
     const navigate = useNavigate();
-    const [genres, setGenres] = useState([]);
+    const {topGenres, setTopGenres} = useContext(SpotifyContext);
 
     useEffect(() => {
         const token = localStorage.getItem("spotify_access_token");
@@ -30,7 +31,7 @@ const TopGenres = () => {
                     .sort(([, a], [, b]) => b - a)
                     .slice(0, 5)
                     .map(([genre]) => genre);
-                setGenres(sortedGenres);
+                setTopGenres(sortedGenres);
             })
             .catch(error => console.error("Error fetching top genres:", error));
         }
@@ -50,8 +51,8 @@ const TopGenres = () => {
                 <img src="https://img.icons8.com/ios-glyphs/30/000000/user.png" alt="Profile" className="w-6 h-6" />
             </button>
             <h1 className="text-5xl text-white mb-10 font-bold drop-shadow-lg">Top Genres</h1>
-            {genres.length > 0 ? (
-                genres.map((genre, index) => (
+            {topGenres.length > 0 ? (
+                topGenres.map((genre, index) => (
                     <div
                         key={index}
                         className="flex items-center bg-white rounded-lg p-6 mb-6 w-96 shadow-lg transition transform hover:-translate-y-2 hover:shadow-2xl"

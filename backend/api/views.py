@@ -3,8 +3,40 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import environ
-
 from .models import Wrapped
+from .utils import get_music_personality_description
+
+
+@csrf_exempt
+def get_description(request):
+    if request.method == "POST":
+        try:
+            # Parse the JSON data from the request
+            data = json.loads(request.body)
+            top_genres = data.get("topGenres", [])
+            top_artists = data.get("topArtists", [])
+
+            # Extract just the artist names from top_artists
+            artist_names = [artist["name"] for artist in top_artists if "name" in artist]
+
+            # Construct a more detailed prompt
+            prompt = (
+                f"Imagine a person who loves listening to genres like {top_genres} "
+                f"and artists such as {artist_names}. Describe their personality, behavior, "
+                f"fashion sense, and general outlook on life in a creative and engaging way."
+                f"keep it under 50 words"
+            )
+            
+            # Call the function to generate the description
+            description = get_music_personality_description(prompt)
+            return JsonResponse({"description": description}, status=200)
+        except Exception as e:
+            # Print the error to the console for debugging
+            print("Error:", str(e))
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
 
 @csrf_exempt  # Disable CSRF protection for simplicity (not recommended for production)
 def save_wrapped(request):

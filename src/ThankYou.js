@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
@@ -17,6 +17,9 @@ const ThankYou = () => {
         isPublic,
         setIsPublic
     } = useContext(SpotifyContext); // Access all data from the context
+
+    const [description, setDescription] = useState(""); // State for the description
+    const [isGenerating, setIsGenerating] = useState(false); // State for loading status
 
     // Log all data to the console
     useEffect(() => {
@@ -85,10 +88,39 @@ const ThankYou = () => {
         }
     };
 
-    // Function to make the wrap public
-    const makeWrapPublic = () => {
-        setIsPublic(true);
-        alert("Your wrap is now public!");
+    // Function to toggle the wrap's visibility
+    const toggleWrapVisibility = () => {
+        setIsPublic(!isPublic);
+        alert(`Your wrap is now ${!isPublic ? "public" : "private"}!`);
+    };
+
+    // Function to get the description
+    const getDescription = async () => {
+        setIsGenerating(true); // Set loading state to true
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/get-description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    topGenres: topGenres,
+                    topArtists: topArtists
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setDescription(data.description);
+            } else {
+                throw new Error(data.error || "Failed to fetch description");
+            }
+        } catch (error) {
+            console.error("Error fetching description:", error);
+            alert("An error occurred while fetching the description.");
+        } finally {
+            setIsGenerating(false); // Set loading state to false
+        }
     };
 
     return (
@@ -111,12 +143,25 @@ const ThankYou = () => {
                     Save Wrap
                 </button>
                 <button
-                    onClick={makeWrapPublic}
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600 transition"
+                    onClick={toggleWrapVisibility}
+                    className={`px-6 py-3 rounded-lg text-xl transition ${
+                        isPublic ? "bg-red-500 text-white hover:bg-red-600" : "bg-blue-500 text-white hover:bg-blue-600"
+                    }`}
                 >
-                    Make Public
+                    {isPublic ? "Make Private" : "Make Public"}
+                </button>
+                <button
+                    onClick={getDescription}
+                    className="bg-purple-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-purple-600 transition"
+                >
+                    {isGenerating ? "Generating..." : "View Description"}
                 </button>
             </div>
+            {description && (
+                <p className="mt-8 bg-white text-gray-800 p-4 rounded-lg text-lg shadow-md">
+                    {description}
+                </p>
+            )}
             <button
                 onClick={() => navigate('/')}
                 className="mt-8 bg-white text-gray-600 px-8 py-3 rounded-lg text-xl hover:bg-gray-600 hover:text-white transition"

@@ -1,41 +1,10 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext';
 
 const TopGenres = () => {
     const navigate = useNavigate();
-    const {topGenres, setTopGenres} = useContext(SpotifyContext);
-
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token) {
-            // Fetch user's top artists and extract genres
-            fetch("https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch top genres");
-                return response.json();
-            })
-            .then(data => {
-                const genreCounts = {};
-                data.items.forEach(artist => {
-                    artist.genres.forEach(genre => {
-                        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-                    });
-                });
-                // Sort and get the top 5 genres
-                const sortedGenres = Object.entries(genreCounts)
-                    .sort(([, a], [, b]) => b - a)
-                    .slice(0, 5)
-                    .map(([genre]) => genre);
-                setTopGenres(sortedGenres);
-            })
-            .catch(error => console.error("Error fetching top genres:", error));
-        }
-    }, []);
+    const {topGenres} = useContext(SpotifyContext);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");

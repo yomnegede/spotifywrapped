@@ -1,33 +1,12 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext';
 
 const SavedShows = () => {
     const navigate = useNavigate();
-    const {savedShows, setSavedShows} = useContext(SpotifyContext);
+    const {savedShows} = useContext(SpotifyContext);
 
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token) {
-            fetch("https://api.spotify.com/v1/me/shows?limit=5", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch saved shows");
-                return response.json();
-            })
-            .then(data => {
-                const showData = data.items.map(item => ({
-                    name: item.show.name,
-                    imageUrl: item.show.images[0]?.url || "https://via.placeholder.com/100"
-                }));
-                setSavedShows(showData);
-            })
-            .catch(error => console.error("Error fetching saved shows:", error));
-        }
-    }, []);
+    
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");

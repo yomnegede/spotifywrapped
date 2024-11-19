@@ -1,34 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext';
 
 const RecentlyPlayedTracks = () => {
     const navigate = useNavigate();
-    const {recentlyPlayed, setRecentlyPlayed}= useContext(SpotifyContext);
-
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token) {
-            fetch("https://api.spotify.com/v1/me/player/recently-played?limit=5", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch recently played tracks");
-                return response.json();
-            })
-            .then(data => {
-                const trackData = data.items.map(item => ({
-                    name: item.track.name,
-                    artist: item.track.artists[0]?.name || "Unknown Artist",
-                    imageUrl: item.track.album.images[0]?.url || "https://via.placeholder.com/100"
-                }));
-                setRecentlyPlayed(trackData);
-            })
-            .catch(error => console.error("Error fetching recently played tracks:", error));
-        }
-    }, []);
+    const {recentlyPlayed}= useContext(SpotifyContext);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");

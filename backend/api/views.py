@@ -37,6 +37,10 @@ def get_description(request):
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import Wrapped
 
 @csrf_exempt  # Disable CSRF protection for simplicity (not recommended for production)
 def save_wrapped(request):
@@ -45,16 +49,31 @@ def save_wrapped(request):
         try:
             # Parse the JSON data from the request
             data = json.loads(request.body)
-
             print("Received Data:", data)  # Log the received data
 
-            # Get the user information from the request
+            # Get the Spotify user ID and visibility status from the request
             spotify_user_id = data.get("spotify_user_id")
+            is_public = data.get("is_public", False)
+
+            # Check if a Wrapped entry with the given Spotify user ID already exists
+            existing_entry = Wrapped.objects.filter(spotify_user_id=spotify_user_id).first()
+
+            if existing_entry:
+                # If the entry exists and the visibility status is different, update it
+                if existing_entry.is_public != is_public:
+                    existing_entry.is_public = is_public
+                    existing_entry.save()
+                    print("Updated wrap visibility status.")
+                    return JsonResponse({"message": "Wrap visibility status updated successfully."}, status=200)
+                
+                print("Wrap data already exists in the database with the same visibility.")
+                return JsonResponse({"message": "Wrap data already exists in the database with the same visibility."}, status=200)
+
+            # If the entry does not exist, proceed to create a new Wrapped entry
             display_name = data.get("display_name", "Anonymous User")
             email = data.get("email", "no-email@example.com")
             country = data.get("country", "US")
             profile_image_url = data.get("profile_image_url", "")
-
             top_artists = data.get("top_artists", [])
             top_songs = data.get("top_songs", [])
             top_genres = data.get("top_genres", [])
@@ -62,7 +81,6 @@ def save_wrapped(request):
             fun_fact = data.get("fun_fact", "No fun fact provided")
             recently_played = data.get("recently_played", [])
             saved_shows = data.get("saved_shows", [])
-            is_public = data.get("is_public", False)
 
             # Create a new Wrapped entry
             wrapped_entry = Wrapped.objects.create(
@@ -87,6 +105,8 @@ def save_wrapped(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
 
 def get_public_wraps(request):
     if request.method == "GET":

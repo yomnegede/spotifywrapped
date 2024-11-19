@@ -1,41 +1,10 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext';
 
 const TopAlbums = () => {
     const navigate = useNavigate();
-    const {topAlbums, setTopAlbums} = useContext(SpotifyContext);
-
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token) {
-            // Fetch top tracks and extract unique albums
-            fetch("https://api.spotify.com/v1/me/top/tracks?limit=50&time_range=long_term", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch top albums");
-                return response.json();
-            })
-            .then(data => {
-                // Extract unique albums from the top tracks
-                const albumMap = new Map();
-                data.items.forEach(track => {
-                    const album = track.album;
-                    if (!albumMap.has(album.id)) {
-                        albumMap.set(album.id, {
-                            name: album.name,
-                            imageUrl: album.images[0]?.url || "https://via.placeholder.com/100"
-                        });
-                    }
-                });
-                setTopAlbums(Array.from(albumMap.values()).slice(0, 3)); // Limit to top 3 albums
-            })
-            .catch(error => console.error("Error fetching top albums:", error));
-        }
-    }, []);
+    const {topAlbums} = useContext(SpotifyContext);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");

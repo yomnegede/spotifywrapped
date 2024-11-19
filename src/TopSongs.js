@@ -1,33 +1,11 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopSongs = () => {
     const navigate = useNavigate();
-    const {topSongs, setTopSongs} = useContext(SpotifyContext); // State to hold top songs
+    const {topSongs} = useContext(SpotifyContext); // State to hold top songs
 
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token) {
-            fetch("https://api.spotify.com/v1/me/top/tracks?limit=3&time_range=long_term", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch top songs");
-                return response.json();
-            })
-            .then(data => {
-                const songData = data.items.map(song => ({
-                    title: song.name,
-                    imageUrl: song.album.images[0]?.url || "https://via.placeholder.com/100"
-                }));
-                setTopSongs(songData);
-            })
-            .catch(error => console.error("Error fetching top songs:", error));
-        }
-    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");

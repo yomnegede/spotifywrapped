@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
@@ -11,40 +11,12 @@ const ThankYou = () => {
         topSongs,
         topGenres,
         topAlbums,
-        funFact,
         recentlyPlayed,
         savedShows,
         isPublic,
+        funFact,
         setIsPublic
     } = useContext(SpotifyContext); // Access all data from the context
-
-    const [description, setDescription] = useState(""); // State for the description
-    const [isGenerating, setIsGenerating] = useState(false); // State for loading status
-
-    // Log all data to the console
-    useEffect(() => {
-        console.log("User Profile:", userProfile);
-        console.log("Spotify User ID:", spotifyUserId);
-        console.log("Top Artists:", topArtists);
-        console.log("Top Songs:", topSongs);
-        console.log("Top Genres:", topGenres);
-        console.log("Top Albums:", topAlbums);
-        console.log("Fun Fact:", funFact);
-        console.log("Recently Played Tracks:", recentlyPlayed);
-        console.log("Saved Shows:", savedShows);
-        console.log("Is Public:", isPublic);
-    }, [
-        userProfile,
-        spotifyUserId,
-        topArtists,
-        topSongs,
-        topGenres,
-        topAlbums,
-        funFact,
-        recentlyPlayed,
-        savedShows,
-        isPublic
-    ]);
 
     // Function to save the wrap data to the database
     const saveWrap = async () => {
@@ -70,9 +42,9 @@ const ThankYou = () => {
                     top_songs: topSongs,
                     top_genres: topGenres,
                     top_albums: topAlbums,
-                    fun_fact: funFact,
                     recently_played: recentlyPlayed,
                     saved_shows: savedShows,
+                    fun_fact: funFact,
                     is_public: isPublic
                 })
             });
@@ -94,35 +66,6 @@ const ThankYou = () => {
         alert(`Your wrap is now ${!isPublic ? "public" : "private"}!`);
     };
 
-    // Function to get the description
-    const getDescription = async () => {
-        setIsGenerating(true); // Set loading state to true
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/get-description', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    topGenres: topGenres,
-                    topArtists: topArtists
-                })
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setDescription(data.description);
-            } else {
-                throw new Error(data.error || "Failed to fetch description");
-            }
-        } catch (error) {
-            console.error("Error fetching description:", error);
-            alert("An error occurred while fetching the description.");
-        } finally {
-            setIsGenerating(false); // Set loading state to false
-        }
-    };
-
     return (
         <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-br from-gray-400 to-gray-600 p-5">
             <button onClick={() => navigate('/')} className="absolute top-5 left-5 bg-gray-600 text-white px-4 py-2 rounded-full">
@@ -135,33 +78,82 @@ const ThankYou = () => {
             <p className="text-3xl text-white text-center mb-6">
                 Hope you enjoyed your 2024 Spotify Wrapped!
             </p>
-            <div className="flex space-x-4">
-                <button
-                    onClick={saveWrap}
-                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-green-600 transition"
-                >
-                    Save Wrap
-                </button>
-                <button
-                    onClick={toggleWrapVisibility}
-                    className={`px-6 py-3 rounded-lg text-xl transition ${
-                        isPublic ? "bg-red-500 text-white hover:bg-red-600" : "bg-blue-500 text-white hover:bg-blue-600"
-                    }`}
-                >
-                    {isPublic ? "Make Private" : "Make Public"}
-                </button>
-                <button
-                    onClick={getDescription}
-                    className="bg-purple-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-purple-600 transition"
-                >
-                    {isGenerating ? "Generating..." : "View Description"}
-                </button>
+
+            {/* Summary Section */}
+            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
+                <h2 className="text-3xl font-bold mb-4">Summary</h2>
+                {userProfile && (
+                    <div className="mb-4">
+                        <h3 className="text-2xl font-semibold">User Profile</h3>
+                        <p><strong>Name:</strong> {userProfile.display_name}</p>
+                        <p><strong>Email:</strong> {userProfile.email}</p>
+                        <p><strong>Country:</strong> {userProfile.country}</p>
+                    </div>
+                )}
+                <div className="mb-4">
+                    <h3 className="text-2xl font-semibold">Top Artists</h3>
+                    <ul className="list-disc ml-6">
+                        {topArtists.map((artist, index) => (
+                            <li key={index}>{artist.name}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="mb-4">
+                    <h3 className="text-2xl font-semibold">Top Songs</h3>
+                    <ul className="list-disc ml-6">
+                        {topSongs.map((song, index) => (
+                            <li key={index}>{song.title}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="mb-4">
+                    <h3 className="text-2xl font-semibold">Top Genres</h3>
+                    <p>{topGenres.join(", ")}</p>
+                </div>
+                <div className="mb-4">
+                    <h3 className="text-2xl font-semibold">Top Albums</h3>
+                    <ul className="list-disc ml-6">
+                        {topAlbums.map((album, index) => (
+                            <li key={index}>{album.name}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="mb-4">
+                    <h3 className="text-2xl font-semibold">Recently Played Tracks</h3>
+                    <ul className="list-disc ml-6">
+                        {recentlyPlayed.map((track, index) => (
+                            <li key={index}>{track.name} by {track.artist}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="mb-4">
+                    <h3 className="text-2xl font-semibold">Saved Shows</h3>
+                    <ul className="list-disc ml-6">
+                        {savedShows.map((show, index) => (
+                            <li key={index}>{show.name}</li>
+                        ))}
+                    </ul>
+                </div>
             </div>
-            {description && (
-                <p className="mt-8 bg-white text-gray-800 p-4 rounded-lg text-lg shadow-md">
-                    {description}
-                </p>
-            )}
+
+            {/* Save Wrap Button */}
+            <button
+                onClick={saveWrap}
+                className="mt-8 bg-green-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-green-600 transition"
+            >
+                Save Wrap
+            </button>
+
+            {/* Toggle Wrap Visibility Button */}
+            <button
+                onClick={toggleWrapVisibility}
+                className={`mt-8 px-6 py-3 rounded-lg text-xl transition ${
+                    isPublic ? "bg-red-500 text-white hover:bg-red-600" : "bg-blue-500 text-white hover:bg-blue-600"
+                }`}
+            >
+                {isPublic ? "Make Private" : "Make Public"}
+            </button>
+
             <button
                 onClick={() => navigate('/')}
                 className="mt-8 bg-white text-gray-600 px-8 py-3 rounded-lg text-xl hover:bg-gray-600 hover:text-white transition"

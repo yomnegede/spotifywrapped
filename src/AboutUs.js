@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AboutUs = () => {
+    const [isDarkMode, setIsDarkMode] = useState(true);
     const navigate = useNavigate();
+
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
     // Filler data for the developers
     const developers = [
@@ -39,33 +42,43 @@ const AboutUs = () => {
     ];
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-indigo-400 to-indigo-600 text-white p-5">
+        <div className={`${isDarkMode ? 'bg-gradient-to-br from-[#0B0B0B] via-[#121212] to-[#1DB954] text-white' : 'bg-gradient-to-br from-[#f0f4f8] via-[#dfe6ed] to-[#cbd5e0] text-black'} min-h-screen py-20 px-10 transition-colors duration-300`}>
+            {/* Theme Toggle Button */}
+            <button
+                onClick={toggleTheme}
+                className="absolute top-10 right-10 bg-green-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none"
+            >
+                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            </button>
+
             {/* Back to Profile Button */}
             <button
                 onClick={() => navigate('/profile')}
-                className="absolute top-5 right-5 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition"
+                className="absolute top-10 left-10 bg-red-600 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-red-700 transition-transform duration-200 focus:outline-none"
             >
-                <img src="https://img.icons8.com/ios-glyphs/30/000000/user.png" alt="Profile" className="w-6 h-6" />
+                Back to Profile
             </button>
 
-            <h1 className="text-5xl font-bold mb-8">About Us</h1>
-            <div className="max-w-5xl text-center mb-10">
-                <p className="text-xl mb-4">
-                    Welcome to our Spotify Wrapped application! Our mission is to provide you with an engaging and personalized experience, showcasing your top songs, artists, albums, and more.
-                </p>
-                <p className="text-xl mb-4">
-                    We are a team of six passionate developers who worked together to bring this project to life. Here's a little bit about each of us:
-                </p>
-            </div>
+            <div className="flex flex-col items-center">
+                <h1 className="text-5xl font-extrabold mb-8">About Us</h1>
+                <div className="max-w-4xl text-center mb-10">
+                    <p className="text-2xl mb-4">
+                        Welcome to our Spotify Wrapped application! Our mission is to provide you with an engaging and personalized experience, showcasing your top songs, artists, albums, and more.
+                    </p>
+                    <p className="text-2xl mb-8">
+                        We are a team of six passionate developers who worked together to bring this project to life. Here's a little bit about each of us:
+                    </p>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {developers.map((dev, index) => (
-                    <div key={index} className="bg-white text-black rounded-lg p-6 shadow-lg transform transition hover:scale-105">
-                        <img src={dev.image} alt={dev.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
-                        <h3 className="text-2xl font-bold mb-2">{dev.name}</h3>
-                        <p className="text-sm">{dev.description}</p>
-                    </div>
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {developers.map((dev, index) => (
+                        <div key={index} className="bg-[#282828] text-white rounded-lg p-6 shadow-2xl transform transition hover:scale-105 hover:shadow-3xl">
+                            <img src={dev.image} alt={dev.name} className="w-24 h-24 rounded-full mx-auto mb-4 shadow-md border-4 border-green-500" />
+                            <h3 className="text-2xl font-bold mb-2">{dev.name}</h3>
+                            <p className="text-lg">{dev.description}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

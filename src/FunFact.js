@@ -1,38 +1,10 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext';
 
 const FunFact = () => {
     const navigate = useNavigate();
-    const {funFact,setFunFact} = useContext(SpotifyContext);
-
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token) {
-            fetch("https://api.spotify.com/v1/me/top/artists?limit=5&time_range=long_term", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch fun fact data");
-                return response.json();
-            })
-            .then(data => {
-                if (data.items.length > 0) {
-                    const artist = data.items[0].name;
-                    const genres = data.items[0].genres.join(", ");
-                    setFunFact(`Your top artist this year is ${artist}! You've explored genres like ${genres}.`);
-                } else {
-                    setFunFact("It looks like we couldn't find your top artist. Try listening to more music!");
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching fun fact data:", error);
-                setFunFact("Oops, something went wrong. Try refreshing the page.");
-            });
-        }
-    }, []);
+    const {funFact} = useContext(SpotifyContext);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");

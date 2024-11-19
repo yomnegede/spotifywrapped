@@ -1,82 +1,78 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopArtists = () => {
     const navigate = useNavigate();
-    const { topArtists, setTopArtists } = useContext(SpotifyContext); // Use global state
-
-    useEffect(() => {
-        const token = localStorage.getItem("spotify_access_token");
-        if (token && topArtists.length === 0) { // Fetch only if topArtists is empty
-            fetch("https://api.spotify.com/v1/me/top/artists?limit=3&time_range=long_term", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to fetch top artists");
-                return response.json();
-            })
-            .then(data => {
-                const artistData = data.items.map(artist => ({
-                    name: artist.name,
-                    imageUrl: artist.images[0]?.url || "https://via.placeholder.com/100"
-                }));
-                setTopArtists(artistData); // Use global setTopArtists
-            })
-            .catch(error => console.error("Error fetching top artists:", error));
-        }
-    }, [topArtists, setTopArtists]); // Add dependencies
+    const { topArtists } = useContext(SpotifyContext); // Use global state
+    const [isDarkMode, setIsDarkMode] = useState(true);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");
         navigate('/'); // Redirect to the landing page
     };
 
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
     return (
-        <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-br from-red-500 to-pink-600 p-5">
-            {/* Log Out Button on the Top Left */}
-            <button 
-                onClick={handleLogout} 
-                className="absolute top-5 left-5 bg-red-600 text-white px-4 py-2 rounded-full"
+        <div
+            className={`${
+                isDarkMode
+                    ? 'bg-gradient-to-br from-[#0B0B0B] via-[#121212] to-[#1DB954] text-white'
+                    : 'bg-gradient-to-br from-[#f0f4f8] via-[#dfe6ed] to-[#cbd5e0] text-black'
+            } min-h-screen flex flex-col items-center py-20 px-10 transition-colors duration-300`}
+        >
+            {/* Theme Toggle and Profile Button Container */}
+            <div className="absolute top-10 right-10 flex space-x-4">
+                <button
+                    className="bg-green-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none"
+                    onClick={toggleTheme}
+                >
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
+                <button
+                    onClick={() => navigate('/profile')}
+                    className="bg-blue-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-blue-600 transition-transform duration-200 focus:outline-none"
+                >
+                    Profile
+                </button>
+            </div>
+
+            {/* Log Out Button */}
+            <button
+                className="absolute top-10 left-10 bg-red-600 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-red-700 transition-transform duration-200 focus:outline-none"
+                onClick={handleLogout}
             >
                 Log out
             </button>
 
-            {/* Profile Button on the Top Right */}
-            <button
-                onClick={() => navigate('/profile')}
-                className="absolute top-5 right-5 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition"
-            >
-                <img 
-                    src="https://img.icons8.com/ios-glyphs/30/000000/user.png" 
-                    alt="Profile" 
-                    className="w-6 h-6"
-                />
-            </button>
-
-            <h1 className="text-5xl text-white mb-10 font-bold drop-shadow-lg">Top Artists</h1>
+            <h1 className="text-6xl font-extrabold mb-16 drop-shadow-lg animate-pulse">Top Artists</h1>
             {topArtists.length > 0 ? (
-                topArtists.map((artist, index) => (
-                    <div 
-                        key={index} 
-                        className="flex items-center bg-white rounded-lg p-6 mb-6 w-96 shadow-lg transition transform hover:-translate-y-2 hover:shadow-2xl"
-                    >
-                        <img 
-                            src={artist.imageUrl} 
-                            alt={artist.name} 
-                            className="w-20 h-20 rounded-full mr-6"
-                        />
-                        <p className="text-2xl font-semibold">{artist.name}</p>
-                    </div>
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+                    {topArtists.map((artist, index) => (
+                        <div
+                            key={index}
+                            className="flex flex-col items-center bg-[#282828] text-white rounded-3xl p-10 shadow-2xl transform transition hover:scale-110 hover:shadow-3xl"
+                        >
+                            <img
+                                src={artist.imageUrl}
+                                alt={artist.name}
+                                className="w-48 h-48 rounded-full mb-6 border-8 border-green-500 transform hover:rotate-3 transition-transform duration-500"
+                            />
+                            <p className="text-3xl font-bold">{artist.name}</p>
+                        </div>
+                    ))}
+                </div>
             ) : (
-                <p className="text-white text-lg">Loading top artists...</p>
+                <p className="text-3xl font-semibold mt-16 animate-pulse">
+                    Loading top artists...
+                </p>
             )}
-            <button 
-                onClick={() => navigate('/TopSongs')} 
-                className="mt-8 bg-white text-pink-600 px-8 py-3 rounded-lg text-xl hover:bg-pink-600 hover:text-white transition"
+
+            {/* Next Button */}
+            <button
+                onClick={() => navigate('/TopSongs')}
+                className="mt-20 bg-green-500 text-white px-16 py-6 text-2xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
             >
                 Next
             </button>

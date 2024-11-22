@@ -108,6 +108,7 @@ def save_wrapped(request):
 
 
 
+
 def get_public_wraps(request):
     if request.method == "GET":
         try:
@@ -142,7 +143,72 @@ def get_public_wraps(request):
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-def get_public_wrap(request, wrapId):
+@csrf_exempt
+def get_user_wraps(request, display_name):
+    try:
+        wraps = Wrapped.objects.filter(display_name=display_name)
+
+        wraps_data = [
+            {
+                "id": wrap.id,
+                "spotify_user_id": wrap.spotify_user_id,
+                "display_name": wrap.display_name,
+                "email": wrap.email,
+                "country": wrap.country,
+                "profile_image_url": wrap.profile_image_url,
+                "top_artists": wrap.top_artists,
+                "top_songs": wrap.top_songs,
+                "top_genres": wrap.top_genres,
+                "top_albums": wrap.top_albums,
+                "fun_fact": wrap.fun_fact,
+                "recently_played": wrap.recently_played,
+                "saved_shows": wrap.saved_shows,
+                "created_at": wrap.created_at.isoformat(),
+                "is_public": wrap.is_public,
+            }
+            for wrap in wraps
+        ]
+
+        return JsonResponse({"wraps": wraps_data}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    
+@csrf_exempt
+def delete_wrap(request, wrap_id):
+    print("reached backend for delete")
+    try:
+        wrap = Wrapped.objects.get(id=wrap_id)
+        wrap.delete()
+        return JsonResponse({"message": "Wrap deleted successfully."}, status=200)
+
+    except Wrapped.DoesNotExist:
+        return JsonResponse({"error": "Wrap not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+@csrf_exempt
+def update_wrap_visibility(request, wrap_id):
+    print("reached backend for visibility")
+    try:
+        data = json.loads(request.body)
+        is_public = data.get("is_public", False)
+
+        wrap = Wrapped.objects.get(id=wrap_id)
+        wrap.is_public = is_public
+        wrap.save()
+
+        return JsonResponse({"message": "Visibility updated successfully."}, status=200)
+
+    except Wrapped.DoesNotExist:
+        return JsonResponse({"error": "Wrap not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+
+def get_wrap(request, wrapId):
     try:
         # Fetch the specific public wrap based on the wrapId
         wrap = Wrapped.objects.get(spotify_user_id=wrapId, is_public=True)

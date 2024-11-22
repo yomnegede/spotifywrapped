@@ -46,25 +46,25 @@ const TopArtists = () => {
                 Log out
             </button>
 
-            <h1 className="text-6xl font-extrabold mb-16 drop-shadow-lg animate-pulse">Top Artists</h1>
+            <h1 className="text-8xl font-extrabold mb-20 drop-shadow-lg animate-pulse">Top Artists</h1>
             {topArtists.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
                     {topArtists.map((artist, index) => (
                         <div
                             key={index}
-                            className="flex flex-col items-center bg-[#282828] text-white rounded-3xl p-10 shadow-2xl transform transition hover:scale-110 hover:shadow-3xl"
+                            className="flex flex-col items-center bg-[#282828] text-white rounded-3xl p-12 shadow-2xl transform transition hover:scale-110 hover:shadow-3xl"
                         >
                             <img
                                 src={artist.imageUrl}
                                 alt={artist.name}
-                                className="w-48 h-48 rounded-full mb-6 border-8 border-green-500 transform hover:rotate-3 transition-transform duration-500"
+                                className="w-72 h-72 rounded-full mb-8 border-8 border-green-500 transform hover:rotate-3 transition-transform duration-500"
                             />
-                            <p className="text-3xl font-bold">{artist.name}</p>
+                            <p className="text-4xl font-bold">{artist.name}</p>
                         </div>
                     ))}
                 </div>
             ) : (
-                <p className="text-3xl font-semibold mt-16 animate-pulse">
+                <p className="text-4xl font-semibold mt-16 animate-pulse">
                     Loading top artists...
                 </p>
             )}
@@ -72,7 +72,7 @@ const TopArtists = () => {
             {/* Next Button */}
             <button
                 onClick={() => navigate('/TopSongs')}
-                className="mt-20 bg-green-500 text-white px-16 py-6 text-2xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
+                className="mt-20 bg-green-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
             >
                 Next
             </button>

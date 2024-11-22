@@ -70,7 +70,7 @@ const LandingPage = () => {
                             <p className="text-xl text-gray-300 mb-6">{wrap.fun_fact}</p>
                             <button
                                 className="bg-[#1DB954] text-white px-8 py-3 text-xl rounded-lg hover:bg-green-600 transition duration-200"
-                                onClick={() => window.location.href = `/public-wrap/${wrap.spotify_user_id}`}
+                                onClick={() => window.location.href = `/wrap/${wrap.spotify_user_id}`}
                             >
                                 View Spotify Wrapped
                             </button>

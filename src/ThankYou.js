@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
@@ -17,6 +17,15 @@ const ThankYou = () => {
         funFact,
         setIsPublic
     } = useContext(SpotifyContext); // Access all data from the context
+
+    const [isDarkMode, setIsDarkMode] = useState(true);
+
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+    const toggleWrapVisibility = () => {
+        setIsPublic(!isPublic);
+        alert(`Your wrap is now ${!isPublic ? "public" : "private"}!`);
+    };
 
     // Function to save the wrap data to the database
     const saveWrap = async () => {
@@ -60,106 +69,116 @@ const ThankYou = () => {
         }
     };
 
-    // Function to toggle the wrap's visibility
-    const toggleWrapVisibility = () => {
-        setIsPublic(!isPublic);
-        alert(`Your wrap is now ${!isPublic ? "public" : "private"}!`);
-    };
 
     return (
-        <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-br from-gray-400 to-gray-600 p-5">
-            <button onClick={() => navigate('/')} className="absolute top-5 left-5 bg-gray-600 text-white px-4 py-2 rounded-full">
-                Log out
-            </button>
-            <button onClick={() => navigate('/profile')} className="absolute top-5 right-5 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition">
-                <img src="https://img.icons8.com/ios-glyphs/30/000000/user.png" alt="Profile" className="w-6 h-6" />
-            </button>
-            <h1 className="text-5xl text-white mb-10 font-bold drop-shadow-lg">Thank You!</h1>
-            <p className="text-3xl text-white text-center mb-6">
+        <div
+            className={`min-h-screen flex flex-col items-center py-20 px-10 transition-colors duration-300 ${
+                isDarkMode
+                    ? 'bg-gradient-to-br from-[#0B0B0B] via-[#121212] to-[#1DB954] text-white'
+                    : 'bg-[#f0f4f8] text-black'
+            }`}
+        >
+            {/* Top Navigation: Logout, Theme, and Profile */}
+            <div className="absolute top-5 left-5">
+                <button
+                    onClick={() => navigate('/')}
+                    className="bg-red-600 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-red-700 transition duration-300 focus:outline-none"
+                >
+                    Log out
+                </button>
+            </div>
+            <div className="absolute top-5 right-5 flex space-x-4">
+                <button
+                    onClick={toggleTheme}
+                    className="bg-green-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none"
+                >
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
+                <button
+                    onClick={() => navigate('/profile')}
+                    className="bg-blue-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none"
+                >
+                    Profile
+                </button>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-8xl font-extrabold mb-16 drop-shadow-lg animate-slide-in">
+                Thank You!
+            </h1>
+            <p className="text-4xl font-medium text-center mb-16 animate-fade-in">
                 Hope you enjoyed your 2024 Spotify Wrapped!
             </p>
 
-            {/* Summary Section */}
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
-                <h2 className="text-3xl font-bold mb-4">Summary</h2>
+            {/* Summary Card */}
+            <div className="relative bg-[#121212] text-white rounded-3xl p-10 shadow-lg w-full max-w-6xl animate-fade-in">
+                {/* Visibility Button */}
+                <button
+                    onClick={toggleWrapVisibility}
+                    className="absolute top-5 right-5 p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform duration-300"
+                >
+                    <img
+                        src={
+                            isPublic
+                                ? "https://cdn.iconscout.com/icon/free/png-512/free-eye-icon-download-in-svg-png-gif-file-formats--feather-pack-user-interface-icons-434039.png?f=webp&w=256"
+                                : "https://cdn.iconscout.com/icon/free/png-512/free-eye-icon-download-in-svg-png-gif-file-formats--off-feather-pack-user-interface-icons-434038.png?f=webp&w=256"
+                        }
+                        alt={isPublic ? "Public" : "Private"}
+                        className="w-8 h-8"
+                    />
+                </button>
+
+                {/* Summary Content */}
+                <h2 className="text-4xl font-bold mb-8">Summary</h2>
                 {userProfile && (
-                    <div className="mb-4">
-                        <h3 className="text-2xl font-semibold">User Profile</h3>
+                    <div className="mb-8">
+                        <h3 className="text-3xl font-semibold mb-4">User Profile</h3>
                         <p><strong>Name:</strong> {userProfile.display_name}</p>
                         <p><strong>Email:</strong> {userProfile.email}</p>
                         <p><strong>Country:</strong> {userProfile.country}</p>
                     </div>
                 )}
-                <div className="mb-4">
-                    <h3 className="text-2xl font-semibold">Top Artists</h3>
-                    <ul className="list-disc ml-6">
-                        {topArtists.map((artist, index) => (
-                            <li key={index}>{artist.name}</li>
-                        ))}
-                    </ul>
+                <div className="mb-8">
+                    <h3 className="text-3xl font-semibold mb-4">Top Artists</h3>
+                    <p>{topArtists.map(artist => artist.name).join(", ")}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-2xl font-semibold">Top Songs</h3>
-                    <ul className="list-disc ml-6">
-                        {topSongs.map((song, index) => (
-                            <li key={index}>{song.title}</li>
-                        ))}
-                    </ul>
+                <div className="mb-8">
+                    <h3 className="text-3xl font-semibold mb-4">Top Songs</h3>
+                    <p>{topSongs.map(song => song.title).join(", ")}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-2xl font-semibold">Top Genres</h3>
+                <div className="mb-8">
+                    <h3 className="text-3xl font-semibold mb-4">Top Genres</h3>
                     <p>{topGenres.join(", ")}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-2xl font-semibold">Top Albums</h3>
-                    <ul className="list-disc ml-6">
-                        {topAlbums.map((album, index) => (
-                            <li key={index}>{album.name}</li>
-                        ))}
-                    </ul>
+                <div className="mb-8">
+                    <h3 className="text-3xl font-semibold mb-4">Top Albums</h3>
+                    <p>{topAlbums.map(album => album.name).join(", ")}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-2xl font-semibold">Recently Played Tracks</h3>
-                    <ul className="list-disc ml-6">
-                        {recentlyPlayed.map((track, index) => (
-                            <li key={index}>{track.name} by {track.artist}</li>
-                        ))}
-                    </ul>
+                <div className="mb-8">
+                    <h3 className="text-3xl font-semibold mb-4">Recently Played Tracks</h3>
+                    <p>{recentlyPlayed.map(track => `${track.name} by ${track.artist}`).join(", ")}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-2xl font-semibold">Saved Shows</h3>
-                    <ul className="list-disc ml-6">
-                        {savedShows.map((show, index) => (
-                            <li key={index}>{show.name}</li>
-                        ))}
-                    </ul>
+                <div>
+                    <h3 className="text-3xl font-semibold mb-4">Saved Shows</h3>
+                    <p>{savedShows.map(show => show.name).join(", ")}</p>
                 </div>
             </div>
 
-            {/* Save Wrap Button */}
-            <button
-                onClick={saveWrap}
-                className="mt-8 bg-green-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-green-600 transition"
-            >
-                Save Wrap
-            </button>
-
-            {/* Toggle Wrap Visibility Button */}
-            <button
-                onClick={toggleWrapVisibility}
-                className={`mt-8 px-6 py-3 rounded-lg text-xl transition ${
-                    isPublic ? "bg-red-500 text-white hover:bg-red-600" : "bg-blue-500 text-white hover:bg-blue-600"
-                }`}
-            >
-                {isPublic ? "Make Private" : "Make Public"}
-            </button>
-
-            <button
-                onClick={() => navigate('/')}
-                className="mt-8 bg-white text-gray-600 px-8 py-3 rounded-lg text-xl hover:bg-gray-600 hover:text-white transition"
-            >
-                Start Over
-            </button>
+            {/* Save Wrap and Start Over Buttons */}
+            <div className="flex space-x-8 mt-16">
+                <button
+                    onClick={saveWrap}
+                    className="bg-green-500 text-white px-16 py-8 text-2xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
+                >
+                    Save Wrap
+                </button>
+                <button
+                    onClick={() => navigate('/')}
+                    className="bg-white text-gray-600 px-16 py-8 text-2xl rounded-full shadow-md hover:bg-gray-600 hover:text-white transition duration-300 focus:outline-none"
+                >
+                    Start Over
+                </button>
+            </div>
         </div>
     );
 };

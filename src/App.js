@@ -31,7 +31,7 @@ function App() {
                     <Route path="/callback" element={<SpotifyCallback />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/about" element={<AboutUs />} /> 
-                    <Route path="/public-wrap/:wrapId" element={<PublicWrappedPage />} />
+                    <Route path="/wrap/:wrapId" element={<PublicWrappedPage />} />
                 </Routes>
             </Router>
         </SpotifyProvider>

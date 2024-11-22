@@ -8,7 +8,7 @@ const PublicWrappedPage = () => {
     const [isDarkMode, setIsDarkMode] = useState(true);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/api/get-public-wrap/${wrapId}`)
+        fetch(`http://127.0.0.1:8000/api/get-wrap/${wrapId}`)
             .then(response => {
                 if (!response.ok) throw new Error("Failed to fetch wrap data");
                 return response.json();

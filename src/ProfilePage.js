@@ -22,6 +22,7 @@ const ProfilePage = () => {
     const [dataFetched, setDataFetched] = useState(false); // State to ensure data is fetched only once
     const [description, setDescription] = useState(""); // State to store the description
     const [isGenerating, setIsGenerating] = useState(false); // State to handle the loading animation
+    const [savedWraps, setSavedWraps] = useState([]); // State to store saved wraps
     const navigate = useNavigate();
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -55,10 +56,60 @@ const ProfilePage = () => {
             });
     };
 
+
+    const fetchSavedWraps = () => {
+        if (userProfile) {
+            fetch(`http://127.0.0.1:8000/api/get-user-wraps/${userProfile.display_name}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.wraps) setSavedWraps(data.wraps);
+                })
+                .catch((error) => console.error("Error fetching saved wraps:", error));
+        }
+    };
+
+    const deleteWrap = (wrapId) => {
+        fetch(`http://127.0.0.1:8000/api/delete-wrap/${wrapId}`, {
+            method: "DELETE",
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setSavedWraps((prev) => prev.filter((wrap) => wrap.id !== wrapId));
+                } else {
+                    console.error("Error deleting wrap.");
+                }
+            })
+            .catch((error) => console.error("Error deleting wrap:", error));
+    };
+
+    const toggleVisibility = (wrapId, isPublic) => {
+        fetch(`http://127.0.0.1:8000/api/update-wrap-visibility/${wrapId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ is_public: !isPublic }),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    setSavedWraps((prev) =>
+                        prev.map((wrap) =>
+                            wrap.id === wrapId ? { ...wrap, is_public: !isPublic } : wrap
+                        )
+                    );
+                } else {
+                    console.error("Error updating visibility.");
+                }
+            })
+            .catch((error) => console.error("Error updating visibility:", error));
+    };
+
+
+
     useEffect(() => {
         // Fetch the Spotify user profile and additional data if not already fetched
         const token = localStorage.getItem("spotify_access_token");
         setSpotifyUserId(token);
+
+        fetchSavedWraps();
 
         if (token && !dataFetched) {
             // Fetch user profile
@@ -69,6 +120,8 @@ const ProfilePage = () => {
                 .then(data => {
                     setUserProfile(data);
                     console.log("User Profile:", data);
+
+                    
                 })
                 .catch(error => console.error("Error fetching user profile:", error));
 
@@ -258,7 +311,7 @@ const ProfilePage = () => {
                 >
                     {isDarkMode ? 'Light Mode' : 'Dark Mode'}
                 </button>
-
+    
                 {/* About Us Button */}
                 <button
                     className="bg-blue-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-blue-600 transition-transform duration-200 focus:outline-none"
@@ -267,7 +320,7 @@ const ProfilePage = () => {
                     About Us
                 </button>
             </div>
-
+    
             {/* Log Out Button */}
             <button
                 className="absolute top-10 left-10 bg-red-600 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-red-700 transition-transform duration-200 focus:outline-none"
@@ -275,7 +328,7 @@ const ProfilePage = () => {
             >
                 Log out
             </button>
-
+    
             {/* User Profile Section */}
             <div className="flex flex-col items-center">
                 <h1 className="text-5xl font-extrabold mb-8">Your Spotify Profile</h1>
@@ -325,9 +378,74 @@ const ProfilePage = () => {
                         <p className="text-2xl font-semibold">Loading profile...</p>
                     )}
                 </div>
+
+                {/* Saved Wraps Section */}
+                <div className="w-full max-w-5xl mt-10">
+                    <h2 className="text-4xl font-bold mb-6">Your Saved Wraps</h2>
+                    {savedWraps.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {savedWraps.map((wrap) => (
+                                <div
+                                    key={wrap.id}
+                                    className="relative bg-[#282828] text-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition transform hover:scale-105"
+                                >
+                                    {/* Trash Icon (Delete Wrap) */}
+                                    <button
+                                        onClick={() => deleteWrap(wrap.id)}
+                                        className="absolute top-2 left-2 text-red-500 hover:text-red-600 transition"
+                                    >
+                                        <img
+                                            src="https://img.icons8.com/ios-glyphs/30/FF0000/trash--v1.png"
+                                            alt="Delete Wrap"
+                                        />
+                                    </button>
+
+                                    {/* Visibility Icon */}
+                                    <div className="absolute top-2 right-2">
+                                        <button
+                                            onClick={() => toggleVisibility(wrap.id, wrap.is_public)}
+                                            className="text-gray-400 hover:text-green-500 transition"
+                                        >
+                                            {wrap.is_public ? (
+                                                <img
+                                                    src="https://img.icons8.com/ios-glyphs/30/FFFFFF/visible.png"
+                                                    alt="Public"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src="https://img.icons8.com/ios-glyphs/30/FFFFFF/invisible.png"
+                                                    alt="Private"
+                                                />
+                                            )}
+                                        </button>
+                                    </div>
+
+                                    <div className="mt-8">
+                                        <h3 className="text-2xl font-bold mb-4">{wrap.display_name}'s Wrap</h3>
+                                        <p className="text-lg mb-6">
+                                            <strong>Fun Fact:</strong> {wrap.fun_fact}
+                                        </p>
+                                    </div>
+
+                                    {/* View Spotify Wrapped Button */}
+                                    <button
+                                        className="bg-[#1DB954] text-white px-8 py-3 text-xl rounded-lg hover:bg-green-600 transition duration-200"
+                                        onClick={() => window.location.href = `/wrap/${wrap.spotify_user_id}`}
+                                    >
+                                        View Spotify Wrapped
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xl">You have no saved wraps yet.</p>
+                    )}
+                </div>
+
+                
             </div>
         </div>
     );
-};
+}   
 
 export default ProfilePage;

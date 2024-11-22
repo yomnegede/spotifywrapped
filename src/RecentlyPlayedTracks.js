@@ -4,7 +4,7 @@ import SpotifyContext from './SpotifyContext';
 
 const RecentlyPlayedTracks = () => {
     const navigate = useNavigate();
-    const { recentlyPlayed } = useContext(SpotifyContext);
+    const { recentlyPlayed, playTopSongs } = useContext(SpotifyContext);
     const [isDarkMode, setIsDarkMode] = useState(true);
 
     const handleLogout = () => {
@@ -82,13 +82,19 @@ const RecentlyPlayedTracks = () => {
             {/* Navigation Buttons */}
             <div className="flex space-x-8 mt-20">
                 <button
-                    onClick={() => navigate('/FunFact')}
+                    onClick={() => {
+                        navigate('/FunFact')
+                        playTopSongs();
+                    }}
                     className="bg-green-500 text-white px-16 py-8 text-2xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
                 >
                     Back
                 </button>
                 <button
-                    onClick={() => navigate('/SavedShows')}
+                    onClick={() => {
+                        navigate('/SavedShows')
+                        playTopSongs();
+                    }}
                     className="bg-green-500 text-white px-16 py-8 text-2xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
                 >
                     Next

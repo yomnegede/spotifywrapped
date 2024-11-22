@@ -211,7 +211,7 @@ def update_wrap_visibility(request, wrap_id):
 def get_wrap(request, wrapId):
     try:
         # Fetch the specific public wrap based on the wrapId
-        wrap = Wrapped.objects.get(spotify_user_id=wrapId, is_public=True)
+        wrap = Wrapped.objects.get(spotify_user_id=wrapId)
 
         # Prepare the wrap data to return
         wrap_data = {

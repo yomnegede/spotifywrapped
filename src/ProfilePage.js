@@ -10,6 +10,8 @@ const ProfilePage = () => {
         setSpotifyUserId,
         topGenres,
         topArtists,
+        topSongs,
+        playTopSongs,
         setTopArtists,
         setTopSongs,
         setTopGenres,
@@ -23,6 +25,7 @@ const ProfilePage = () => {
     const [description, setDescription] = useState(""); // State to store the description
     const [isGenerating, setIsGenerating] = useState(false); // State to handle the loading animation
     const [savedWraps, setSavedWraps] = useState([]); // State to store saved wraps
+
     const navigate = useNavigate();
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -146,7 +149,7 @@ const ProfilePage = () => {
 
 
             // Fetch top songs
-            fetch("https://api.spotify.com/v1/me/top/tracks?limit=3&time_range=long_term", {
+            fetch("https://api.spotify.com/v1/me/top/tracks?limit=6&time_range=long_term", {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -158,7 +161,9 @@ const ProfilePage = () => {
             .then(data => {
                 const songData = data.items.map(song => ({
                     title: song.name,
+                    preview_url: song.preview_url,
                     imageUrl: song.album.images[0]?.url || "https://via.placeholder.com/100"
+
                 }));
                 setTopSongs(songData);
             })
@@ -350,7 +355,11 @@ const ProfilePage = () => {
                             {/* View Spotify Wrapped Button */}
                             <button
                                 className="bg-green-500 text-white px-12 py-4 text-2xl rounded-full shadow-md hover:bg-green-600 transition duration-200 mb-6"
-                                onClick={handleSpotifyWrapped}
+                                onClick={() =>{
+                                    handleSpotifyWrapped();
+                                    playTopSongs()
+                                }
+                                }
                             >
                                 View Spotify Wrapped
                             </button>
@@ -430,7 +439,9 @@ const ProfilePage = () => {
                                     {/* View Spotify Wrapped Button */}
                                     <button
                                         className="bg-[#1DB954] text-white px-8 py-3 text-xl rounded-lg hover:bg-green-600 transition duration-200"
-                                        onClick={() => window.location.href = `/wrap/${wrap.spotify_user_id}`}
+                                        onClick={() => {
+                                            window.location.href = `/wrap/${wrap.spotify_user_id}`; // Redirect to the wrap page
+                                        }}
                                     >
                                         View Spotify Wrapped
                                     </button>

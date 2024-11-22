@@ -1,11 +1,19 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopArtists = () => {
     const navigate = useNavigate();
-    const { topArtists } = useContext(SpotifyContext); // Use global state
+    const { topArtists,playTopSongs } = useContext(SpotifyContext); // Use global state
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const [isVisible, setIsVisible] = useState(false); // For animation
+    
+
+    useEffect(() => {
+        // Trigger the fade-in animation when the component is mounted
+        const timer = setTimeout(() => setIsVisible(true), 100);
+        return () => clearTimeout(timer); // Clean up the timer when unmounting
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");
@@ -20,7 +28,9 @@ const TopArtists = () => {
                 isDarkMode
                     ? 'bg-gradient-to-br from-[#0B0B0B] via-[#121212] to-[#1DB954] text-white'
                     : 'bg-gradient-to-br from-[#f0f4f8] via-[#dfe6ed] to-[#cbd5e0] text-black'
-            } min-h-screen flex flex-col items-center py-20 px-10 transition-colors duration-300`}
+            } min-h-screen flex flex-col items-center py-20 px-10 transition-colors duration-300 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'
+            } transform transition-opacity duration-700`}
         >
             {/* Theme Toggle and Profile Button Container */}
             <div className="absolute top-10 right-10 flex space-x-4">
@@ -71,7 +81,11 @@ const TopArtists = () => {
 
             {/* Next Button */}
             <button
-                onClick={() => navigate('/TopSongs')}
+                onClick={() => {
+                    navigate('/TopSongs')
+                    playTopSongs();
+                }
+                }
                 className="mt-20 bg-green-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
             >
                 Next

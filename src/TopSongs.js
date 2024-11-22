@@ -1,11 +1,20 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopSongs = () => {
     const navigate = useNavigate();
-    const { topSongs } = useContext(SpotifyContext); // State to hold top songs
+    const { topSongs, playTopSongs } = useContext(SpotifyContext); // State to hold top songs
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const [animateClass, setAnimateClass] = useState('opacity-0 translate-x-full');
+
+    useEffect(() => {
+        // Trigger the animation when the component mounts
+        const timeout = setTimeout(() => {
+            setAnimateClass('opacity-100 translate-x-0');
+        }, 100);
+        return () => clearTimeout(timeout); // Cleanup
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("spotify_access_token");
@@ -46,16 +55,22 @@ const TopSongs = () => {
                 Log out
             </button>
 
-            <h1 className="text-8xl font-extrabold mb-20 drop-shadow-lg animate-bounce">
+            {/* Page Title */}
+            <h1
+                className={`text-8xl font-extrabold mb-20 drop-shadow-lg transform transition-all duration-1000 ease-out ${animateClass}`}
+            >
                 Top Songs
             </h1>
 
+            {/* Content Section */}
             {topSongs.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+                <div
+                    className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20 transform transition-all duration-1000 ease-out ${animateClass}`}
+                >
                     {topSongs.map((song, index) => (
                         <div
                             key={index}
-                            className="bg-[#282828] text-white rounded-3xl p-12 shadow-2xl transform transition-all hover:scale-110 hover:shadow-3xl flex flex-col items-start justify-start"
+                            className="bg-[#282828] text-white rounded-3xl p-12 shadow-2xl transform transition-transform duration-500 hover:scale-105 hover:shadow-3xl flex flex-col items-start justify-start"
                         >
                             <img
                                 src={song.imageUrl}
@@ -67,7 +82,9 @@ const TopSongs = () => {
                     ))}
                 </div>
             ) : (
-                <p className="text-4xl font-semibold mt-16 animate-pulse">
+                <p
+                    className={`text-4xl font-semibold mt-16 animate-pulse transform transition-all duration-1000 ease-out ${animateClass}`}
+                >
                     Loading top songs...
                 </p>
             )}
@@ -75,13 +92,19 @@ const TopSongs = () => {
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-24 space-x-12">
                 <button
-                    onClick={() => navigate('/TopArtists')}
+                    onClick={() => {
+                        navigate('/TopArtists')
+                        playTopSongs()
+                    }}
                     className="bg-blue-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none"
                 >
                     Back
                 </button>
                 <button
-                    onClick={() => navigate('/TopGenres')}
+                    onClick={() => {
+                        navigate('/TopGenres')
+                        playTopSongs()
+                    }}
                     className="bg-green-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
                 >
                     Next

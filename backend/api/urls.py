@@ -11,4 +11,5 @@ urlpatterns = [
     path('get-user-wraps/<str:display_name>/', views.get_user_wraps, name='get_user_wraps'),  # New endpoint to fetch wraps by display name
     path('delete-wrap/<int:wrap_id>', views.delete_wrap, name='delete_wrap'),  # New endpoint to delete a wrap
     path('update-wrap-visibility/<int:wrap_id>', views.update_wrap_visibility, name='update_wrap_visibility'),  # New endpoint to update wrap visibility
+    path('delete-wraps/<str:display_name>/', views.delete_wraps, name='delete_wraps'),
 ]

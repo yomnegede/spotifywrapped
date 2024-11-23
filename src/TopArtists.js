@@ -1,13 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopArtists = () => {
     const navigate = useNavigate();
-    const { topArtists,playTopSongs } = useContext(SpotifyContext); // Use global state
+    const location = useLocation();
+
+    const { topArtists, playTopSongs } = useContext(SpotifyContext); // Use global state
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [isVisible, setIsVisible] = useState(false); // For animation
-    
 
     useEffect(() => {
         // Trigger the fade-in animation when the component is mounted
@@ -62,8 +63,13 @@ const TopArtists = () => {
                     {topArtists.map((artist, index) => (
                         <div
                             key={index}
-                            className="flex flex-col items-center bg-[#282828] text-white rounded-3xl p-12 shadow-2xl transform transition hover:scale-110 hover:shadow-3xl"
+                            className="relative flex flex-col items-center bg-[#282828] text-white rounded-3xl p-12 shadow-2xl transform transition hover:scale-110 hover:shadow-3xl"
                         >
+                            {/* Ranking Badge */}
+                            <div className="absolute top-4 left-4 bg-green-500 text-white text-xl font-bold px-4 py-2 rounded-full shadow-md">
+                                #{index + 1}
+                            </div>
+
                             <img
                                 src={artist.imageUrl}
                                 alt={artist.name}
@@ -82,10 +88,9 @@ const TopArtists = () => {
             {/* Next Button */}
             <button
                 onClick={() => {
-                    navigate('/TopSongs')
+                    navigate('/TopSongs');
                     playTopSongs();
-                }
-                }
+                }}
                 className="mt-20 bg-green-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
             >
                 Next

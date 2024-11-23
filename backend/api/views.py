@@ -186,7 +186,36 @@ def delete_wrap(request, wrap_id):
         return JsonResponse({"error": "Wrap not found."}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+    
+@csrf_exempt
+def delete_wraps(request, display_name):
 
+    print("reached backend for delete all wraps")
+
+    """
+    Deletes all wraps associated with the given display_name.
+    """
+    if request.method == "DELETE":
+        try:
+            # Query all wraps for the given display_name
+            wraps_to_delete = Wrapped.objects.filter(display_name=display_name)
+            
+            if wraps_to_delete.exists():
+                wraps_to_delete.delete()
+                return JsonResponse(
+                    {"message": f"{display_name}'s account has been deleted."},
+                    status=200
+                )
+            else:
+                return JsonResponse(
+                    {"error": f"{display_name}'s account has been deleted."},
+                    status=404
+                )
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method. Only DELETE is allowed."}, status=405)
+    
 
 @csrf_exempt
 def update_wrap_visibility(request, wrap_id):

@@ -7,37 +7,32 @@ const AboutUs = () => {
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-    // Filler data for the developers
+    // Updated data for the developers
     const developers = [
         {
-            name: "Alex Johnson",
+            name: "Yom",
             image: "https://via.placeholder.com/150",
-            description: "Alex is a passionate front-end developer who loves creating interactive user interfaces. In this project, Alex focused on implementing responsive designs and seamless user experiences."
+            description: " Designed and implemented user-facing features in the frontend, focusing on responsiveness and interactivity. Collaborated on backend API integration to ensure seamless data flow between the server and the UI. Contributed to refining the application's visual design to enhance the overall user experience."
         },
         {
-            name: "Samantha Lee",
+            name: "Vidul",
             image: "https://via.placeholder.com/150",
-            description: "Samantha is a back-end wizard with a knack for databases and APIs. She ensured that our app communicates efficiently with Spotify's API and handles user data securely."
+            description: " Developed backend logic for API endpoints, ensuring secure and efficient data handling. Assisted in frontend development by implementing dynamic components and integrating backend functionality. Worked on creating a cohesive design language that balanced aesthetics and usability."
         },
         {
-            name: "Michael Chen",
+            name: "Ayman",
             image: "https://via.placeholder.com/150",
-            description: "Michael is a full-stack developer who enjoys working across the tech stack. He played a crucial role in integrating front-end and back-end functionalities for a smooth experience."
+            description: " Bridged the frontend and backend by developing end-to-end features that required integration across both layers. Worked on backend API structure and ensured it aligned with the frontend requirements. Contributed to the visual design by ensuring consistency in layout and styling across the application."
         },
         {
-            name: "Rachel Smith",
+            name: "Siddharth",
             image: "https://via.placeholder.com/150",
-            description: "Rachel specializes in UI/UX design and made sure our app is both beautiful and intuitive. Her attention to detail ensures users enjoy exploring their Spotify Wrapped."
+            description: " Implemented core frontend functionality, focusing on responsive design and interactivity. Contributed to backend development by enhancing data processing and API integration. Worked closely on designing a user-friendly interface that aligned with modern UI/UX principles."
         },
         {
-            name: "David Martinez",
+            name: "Aditya",
             image: "https://via.placeholder.com/150",
-            description: "David is a DevOps expert who set up our deployment pipeline and managed the infrastructure. Thanks to him, our app runs efficiently and reliably for users around the world."
-        },
-        {
-            name: "Emma Davis",
-            image: "https://via.placeholder.com/150",
-            description: "Emma is a machine learning enthusiast who explored data insights for our app. She worked on analyzing user listening patterns and generating fun, personalized facts."
+            description: " Worked across the frontend and backend to ensure smooth feature implementation, focusing on both visual and functional aspects. Enhanced the backend architecture to support complex user interactions. Contributed to the application's overall design by ensuring clarity and ease of use in the user experience."
         }
     ];
 
@@ -66,7 +61,7 @@ const AboutUs = () => {
                         Welcome to our Spotify Wrapped application! Our mission is to provide you with an engaging and personalized experience, showcasing your top songs, artists, albums, and more.
                     </p>
                     <p className="text-2xl mb-8">
-                        We are a team of six passionate developers who worked together to bring this project to life. Here's a little bit about each of us:
+                        We are a team of five passionate developers who worked together to bring this project to life. Here's a little bit about each of us:
                     </p>
                 </div>
 
@@ -78,6 +73,18 @@ const AboutUs = () => {
                             <p className="text-lg">{dev.description}</p>
                         </div>
                     ))}
+                </div>
+
+                {/* Contact Us Section */}
+                <div className="mt-16 bg-[#282828] text-white rounded-xl p-8 shadow-xl max-w-3xl text-center">
+                    <h2 className="text-4xl font-bold mb-4">Contact Us</h2>
+                    <p className="text-lg mb-6">If you have any questions or feedback, feel free to reach out to us!</p>
+                    <a
+                        href="mailto:adityasimhadri1@gmail.com"
+                        className="bg-green-500 text-white px-8 py-4 text-2xl rounded-lg shadow-md hover:bg-green-600 transition-transform duration-200"
+                    >
+                        Send an Email
+                    </a>
                 </div>
             </div>
         </div>

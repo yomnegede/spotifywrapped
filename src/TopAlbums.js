@@ -113,7 +113,6 @@ const TopAlbums = () => {
                                 spotifyUserId,
                             },
                         });
-                        playTopSongs();
                     }}
                     className="bg-green-500 text-white px-[2vw] py-[1.2vh] text-[1.2vw] rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
                 >
@@ -135,7 +134,6 @@ const TopAlbums = () => {
                                 spotifyUserId,
                             },
                         });
-                        playTopSongs();
                     }}
                     className="bg-green-500 text-white px-[2vw] py-[1.2vh] text-[1.2vw] rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
                 >

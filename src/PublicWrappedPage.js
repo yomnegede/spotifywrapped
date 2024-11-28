@@ -51,7 +51,11 @@ const PublicWrappedPage = () => {
                     className="w-44 h-44 rounded-full shadow-xl border-4 border-green-500 mb-6"
                 />
                 <h1 className="text-5xl font-extrabold mb-4">Spotify Wrapped for {wrapData.display_name}</h1>
-                <p className="text-2xl font-medium text-center bg-[#282828] p-6 rounded-xl shadow-lg max-w-3xl">
+                <p 
+                className={`text-[1vw] font-medium mt-[1.5vh] p-[1.5vw] rounded-lg shadow-md ${
+                    isDarkMode ? 'bg-[#121212] text-white' : 'bg-[#f4f4f4] text-black'
+                }`}
+                >
                     Fun Fact: {wrapData.fun_fact}
                 </p>
             </div>

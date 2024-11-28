@@ -58,6 +58,8 @@ def save_wrapped(request):
             # Check if a Wrapped entry with the given Spotify user ID already exists
             existing_entry = Wrapped.objects.filter(spotify_user_id=spotify_user_id).first()
 
+            print(spotify_user_id)
+
             if existing_entry:
                 # If the entry exists and the visibility status is different, update it
                 if existing_entry.is_public != is_public:

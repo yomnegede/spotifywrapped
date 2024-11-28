@@ -1,12 +1,25 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation} from 'react-router-dom';
 import SpotifyContext from './SpotifyContext'; // Import the context
 
 const TopSongs = () => {
     const navigate = useNavigate();
-    const { topSongs, playTopSongs } = useContext(SpotifyContext); // State to hold top songs
+    const location = useLocation();
+    
+    const { playTopSongs } = useContext(SpotifyContext); // State to hold top songs
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [animateClass, setAnimateClass] = useState('opacity-0 translate-x-full');
+
+    const topArtists = location.state?.topArtists;
+    const topSongs = location.state?.topSongs;
+    const topGenres = location.state?.topGenres;
+    const topAlbums = location.state?.topAlbums;
+    const funFact = location.state?.funFact;
+    const recentlyPlayed = location.state?.recentlyPlayed;
+    const userProfile = location.state?.userProfile;
+    const savedShows = location.state?.savedShows;
+    const isPublic = location.state?.isPublic;
+    const spotifyUserId = location.state?.spotifyUserId;
 
     useEffect(() => {
         // Trigger the animation when the component mounts
@@ -97,7 +110,20 @@ const TopSongs = () => {
             <div className="flex justify-between mt-24 space-x-12">
                 <button
                     onClick={() => {
-                        navigate('/TopArtists');
+                        navigate('/TopArtists', {
+                            state: {
+                                topArtists,
+                                topSongs,
+                                topGenres,
+                                topAlbums,
+                                funFact,
+                                recentlyPlayed,
+                                userProfile,
+                                savedShows,
+                                isPublic,
+                                spotifyUserId,
+                            },
+                        });
                         playTopSongs();
                     }}
                     className="bg-blue-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none"
@@ -106,7 +132,20 @@ const TopSongs = () => {
                 </button>
                 <button
                     onClick={() => {
-                        navigate('/TopGenres');
+                        navigate('/TopGenres', {
+                            state: {
+                                topArtists,
+                                topSongs,
+                                topGenres,
+                                topAlbums,
+                                funFact,
+                                recentlyPlayed,
+                                userProfile,
+                                savedShows,
+                                isPublic,
+                                spotifyUserId,
+                            },
+                        });
                         playTopSongs();
                     }}
                     className="bg-green-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"

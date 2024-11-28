@@ -14,6 +14,7 @@ const ProfilePage = () => {
         topSongs,
         topAlbums,
         funFact,
+        isPublic,
         recentlyPlayed,
         savedShows,
         playTopSongs,
@@ -117,9 +118,6 @@ const ProfilePage = () => {
             deleteAccount(userProfile.display_name);
         }
     };
-
-
-
 
     const toggleVisibility = (wrapId, isPublic) => {
         fetch(`http://127.0.0.1:8000/api/update-wrap-visibility/${wrapId}`, {
@@ -334,6 +332,7 @@ const ProfilePage = () => {
     };
 
     const handleSpotifyWrapped = () => {
+        console.log(spotifyUserId);
         navigate('/TopArtists', {
             state: {
                 topArtists,
@@ -344,6 +343,8 @@ const ProfilePage = () => {
                 recentlyPlayed,
                 userProfile,
                 savedShows,
+                isPublic,
+                spotifyUserId,
             },
         });
     };
@@ -424,6 +425,25 @@ const ProfilePage = () => {
                             >
                                 View Spotify Wrapped
                             </button>
+                            {/* Get Description Button */}
+                            <button
+                                className="bg-blue-500 text-white px-12 py-4 text-2xl rounded-full shadow-md hover:bg-blue-600 transition duration-200"
+                                onClick={getDescription}
+                            >
+                                Get Description
+                            </button>
+                            {/* Display Loading Animation or Description */}
+                            {isGenerating ? (
+                                <p className="text-xl font-medium mt-6 animate-pulse">
+                                    Generating your personalized description...
+                                </p>
+                            ) : (
+                                description && (
+                                    <p className="text-xl font-medium mt-6 bg-[#121212] p-6 rounded-xl shadow-lg">
+                                        {description}
+                                    </p>
+                                )
+                            )}
                         </div>
                     ) : (
                         <p className="text-2xl font-medium">Loading profile...</p>
@@ -484,25 +504,38 @@ const ProfilePage = () => {
                                         <button
                                             className="bg-green-500 text-white px-6 py-3 text-lg rounded-full hover:bg-green-600 transition"
                                             onClick={() => {
-                                                window.location.href = `/wrap/${wrap.spotify_user_id}`;
+                                                console.log(wrap.spotify_user_id);
+                                                navigate('/TopArtists', {
+                                                    state: {
+                                                        topArtists: wrap.top_artists,
+                                                        topSongs: wrap.top_songs,
+                                                        topGenres: wrap.top_genres,
+                                                        topAlbums: wrap.top_albums,
+                                                        funFact: wrap.fun_fact,
+                                                        recentlyPlayed: wrap.recently_played,
+                                                        userProfile: { display_name: wrap.display_name },
+                                                        savedShows: wrap.saved_shows,
+                                                        isPublic: wrap.is_public,
+                                                        spotifyUserId: wrap.spotify_user_id,
+                                                    },
+                                                });
+                                                playTopSongs();
                                             }}
+                                            
                                         >
                                             View Spotify Wrapped
                                         </button>
                                     </div>
-                                    
                                 </div>
-                                
-                            ))} 
+                            ))}
                         </div>
                     ) : (
                         <p className="text-2xl text-center">You have no saved wraps yet.</p>
                     )}
-                    
                 </div>
-
+    
                 <div className="flex flex-col items-center justify-start min-h-screen pt-10">
-                    <button 
+                    <button
                         onClick={() => {
                             navigate('/');
                             handleDelete();
@@ -512,12 +545,10 @@ const ProfilePage = () => {
                         Delete Account
                     </button>
                 </div>
-
-
             </div>
         </div>
     );
-    
+     
 }   
 
 export default ProfilePage;

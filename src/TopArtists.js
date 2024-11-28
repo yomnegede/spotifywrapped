@@ -6,9 +6,20 @@ const TopArtists = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { topArtists, playTopSongs } = useContext(SpotifyContext); // Use global state
+    const { playTopSongs } = useContext(SpotifyContext); // Use global state
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [isVisible, setIsVisible] = useState(false); // For animation
+
+    const topArtists = location.state?.topArtists;
+    const topSongs = location.state?.topSongs;
+    const topGenres = location.state?.topGenres;
+    const topAlbums = location.state?.topAlbums;
+    const funFact = location.state?.funFact;
+    const recentlyPlayed = location.state?.recentlyPlayed;
+    const userProfile = location.state?.userProfile;
+    const savedShows = location.state?.savedShows;
+    const isPublic = location.state?.isPublic;
+    const spotifyUserId = location.state?.spotifyUserId;
 
     useEffect(() => {
         // Trigger the fade-in animation when the component is mounted
@@ -29,74 +40,92 @@ const TopArtists = () => {
                 isDarkMode
                     ? 'bg-gradient-to-br from-[#0B0B0B] via-[#121212] to-[#1DB954] text-white'
                     : 'bg-gradient-to-br from-[#f0f4f8] via-[#dfe6ed] to-[#cbd5e0] text-black'
-            } min-h-screen flex flex-col items-center py-20 px-10 transition-colors duration-300 ${
+            } min-h-screen flex flex-col items-center py-[4vh] px-[4vw] transition-colors duration-300 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'
             } transform transition-opacity duration-700`}
         >
             {/* Theme Toggle and Profile Button Container */}
-            <div className="absolute top-10 right-10 flex space-x-4">
+            <div className="absolute top-[1.5vh] right-[1.5vw] flex space-x-[0.8vw]">
                 <button
-                    className="bg-green-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none"
+                    className="bg-green-500 text-white px-[1.5vw] py-[0.8vh] text-[0.9vw] rounded-full shadow-md hover:scale-105 transition-transform duration-200 focus:outline-none"
                     onClick={toggleTheme}
                 >
                     {isDarkMode ? 'Light Mode' : 'Dark Mode'}
                 </button>
                 <button
                     onClick={() => navigate('/profile')}
-                    className="bg-blue-500 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-blue-600 transition-transform duration-200 focus:outline-none"
+                    className="bg-blue-500 text-white px-[1.5vw] py-[0.8vh] text-[0.9vw] rounded-full shadow-md hover:bg-blue-600 transition-transform duration-200 focus:outline-none"
                 >
                     Profile
                 </button>
             </div>
-
+    
             {/* Log Out Button */}
             <button
-                className="absolute top-10 left-10 bg-red-600 text-white px-8 py-3 text-xl rounded-full shadow-md hover:bg-red-700 transition-transform duration-200 focus:outline-none"
+                className="absolute top-[1.5vh] left-[1.5vw] bg-red-600 text-white px-[1.5vw] py-[0.8vh] text-[0.9vw] rounded-full shadow-md hover:bg-red-700 transition-transform duration-200 focus:outline-none"
                 onClick={handleLogout}
             >
                 Log out
             </button>
-
-            <h1 className="text-8xl font-extrabold mb-20 drop-shadow-lg animate-pulse">Top Artists</h1>
+    
+            <h1 className="text-[3vw] font-extrabold mb-[4vh] drop-shadow-lg animate-pulse">
+                Top Artists
+            </h1>
             {topArtists.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1.5vw]">
                     {topArtists.map((artist, index) => (
                         <div
                             key={index}
-                            className="relative flex flex-col items-center bg-[#282828] text-white rounded-3xl p-12 shadow-2xl transform transition hover:scale-110 hover:shadow-3xl"
+                            className="relative flex flex-col items-center bg-[#282828] text-white rounded-3xl p-[2.5vw] shadow-2xl transform transition hover:scale-105 hover:shadow-3xl"
                         >
                             {/* Ranking Badge */}
-                            <div className="absolute top-4 left-4 bg-green-500 text-white text-xl font-bold px-4 py-2 rounded-full shadow-md">
+                            <div className="absolute top-[0.8vw] left-[0.8vw] bg-green-500 text-white text-[0.9vw] font-bold px-[0.8vw] py-[0.4vh] rounded-full shadow-md">
                                 #{index + 1}
                             </div>
-
+    
                             <img
                                 src={artist.imageUrl}
                                 alt={artist.name}
-                                className="w-72 h-72 rounded-full mb-8 border-8 border-green-500 transform hover:rotate-3 transition-transform duration-500"
+                                className="w-[12vw] h-[12vw] rounded-full mb-[1.5vh] border-[0.8vw] border-green-500 transform hover:rotate-3 transition-transform duration-500"
                             />
-                            <p className="text-4xl font-bold">{artist.name}</p>
+                            <p className="text-[1.2vw] font-bold">{artist.name}</p>
                         </div>
                     ))}
                 </div>
             ) : (
-                <p className="text-4xl font-semibold mt-16 animate-pulse">
+                <p className="text-[1.2vw] font-semibold mt-[2vh] animate-pulse">
                     Loading top artists...
                 </p>
             )}
-
+    
             {/* Next Button */}
             <button
                 onClick={() => {
-                    navigate('/TopSongs');
+                    console.log(spotifyUserId);
+                    navigate('/TopSongs', {
+                        state: {
+                            topArtists,
+                            topSongs,
+                            topGenres,
+                            topAlbums,
+                            funFact,
+                            recentlyPlayed,
+                            userProfile,
+                            savedShows,
+                            isPublic,
+                            spotifyUserId,
+                        },
+                    });
                     playTopSongs();
                 }}
-                className="mt-20 bg-green-500 text-white px-20 py-8 text-3xl rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
+                className="mt-[3vh] bg-green-500 text-white px-[2.5vw] py-[1.2vh] text-[1.2vw] rounded-full shadow-md hover:bg-green-600 transition duration-300 focus:outline-none"
             >
                 Next
             </button>
         </div>
     );
+    
+    
 };
 
 export default TopArtists;

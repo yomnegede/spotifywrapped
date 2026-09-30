@@ -1,70 +1,244 @@
-# Getting Started with Create React App
+# Spotify Wrapped (Unofficial)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack app that lets Spotify users generate and share a personal “wrapped” snapshot of their listening habits (top artists, songs, genres, albums, recent listens, and more).
 
-## Available Scripts
+![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?logo=react&logoColor=white)
+![JavaScript](https://img.shields.io/badge/Language-JavaScript-F7DF1E?logo=javascript&logoColor=000)
+![Python](https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Backend-Django%204.2-092E20?logo=django&logoColor=white)
 
-In the project directory, you can run:
+> [!IMPORTANT]
+> **Security notice:** this repository history has included environment/config files with sensitive values. Treat any previously committed credentials as compromised: rotate/revoke Spotify, Gemini, database, and Django secrets immediately. Use your own local `.env` files (git-ignored) with placeholder-based configuration.
 
-### `npm start`
+## Overview
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Spotify Wrapped (unofficial) combines:
+- A React frontend (Create React App) for Spotify login, browsing results, and sharing public wrap pages.
+- A Django backend API for Spotify token exchange, wrap persistence, visibility controls, and AI-generated music-personality descriptions.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This project is currently oriented toward **local development**.
 
-### `npm test`
+## Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Spotify OAuth login flow
+- Profile + listening insights pages:
+  - Top artists
+  - Top songs
+  - Top genres
+  - Top albums
+  - Fun fact
+  - Recently played tracks
+  - Saved shows
+- Save wraps and control wrap visibility (public/private)
+- Public wrap gallery and shareable public wrap page (`/wrap/:wrapId`)
+- AI-generated personality description from listening taste (Google Gemini)
+- Supporting pages: callback, thank-you, about
 
-### `npm run build`
+## How it works
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```mermaid
+flowchart LR
+    U[User Browser] --> FE[React Frontend]
+    FE -->|Spotify OAuth authorize| SP[Spotify Accounts]
+    SP -->|redirect with code| FE
+    FE -->|POST code| BE[Django API /api/spotify-auth]
+    BE -->|token exchange| SP
+    FE -->|Spotify Web API calls with token| SWA[Spotify Web API]
+    FE -->|save/fetch wraps| BE
+    BE --> DB[(App Database)]
+    BE -->|generate description| GM[Google Gemini API]
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Tech stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Frontend
+- React 18 (Create React App)
+- React Router
+- Axios
+- styled-components
+- Tailwind CSS
 
-### `npm run eject`
+### Backend
+- Django 4.2
+- Django REST Framework
+- django-cors-headers
+- django-environ
+- Requests
+- Google Generative AI client
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Data/API
+- Spotify OAuth + Spotify Web API
+- Django model-backed wrap storage
+- Gemini text generation for music personality output
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```text
+spotifywrapped/
+├── src/                     # React app
+│   ├── App.js               # Route definitions
+│   ├── LandingPage.js
+│   ├── SpotifyCallback.js
+│   ├── ProfilePage.js
+│   ├── TopArtists.js / TopSongs.js / TopGenres.js / TopAlbums.js
+│   ├── FunFact.js / RecentlyPlayedTracks.js / SavedShows.js
+│   ├── PublicWrappedPage.js / ThankYou.js / AboutUs.js
+│   └── config.js            # Spotify auth URL + scopes
+├── backend/
+│   ├── manage.py
+│   ├── backend/             # Django project settings/urls
+│   ├── api/                 # API views, urls, models
+│   └── db.sqlite3           # SQLite file present in repo
+├── package.json
+└── README.md
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Prerequisites
 
-## Learn More
+- Node.js 18+ and npm
+- Python 3.10+ (3.11+ recommended)
+- A Spotify Developer app
+- A Google Gemini API key (for description generation endpoint)
+- PostgreSQL (if using current backend database settings as-is)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Configuration
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 1) Frontend Spotify OAuth settings
 
-### Code Splitting
+Frontend auth settings are currently defined in `src/config.js`, including:
+- Spotify client ID
+- Redirect URI (`http://localhost:3000/callback` in current local setup)
+- Scopes:
+  - `user-read-private`
+  - `user-read-email`
+  - `user-library-read`
+  - `user-read-recently-played`
+  - `user-top-read`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Your Spotify app configuration in the Spotify Developer Dashboard **must include the exact same redirect URI** used by the app.
 
-### Analyzing the Bundle Size
+### 2) Backend environment variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Create your own local file at `backend/.env` (do not commit it):
 
-### Making a Progressive Web App
+```env
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=http://localhost:3000/callback
+GEMINI_API_KEY=your_gemini_api_key
+# Optional/additional values depending on local backend settings
+# DJANGO_SECRET_KEY=replace_for_local_dev
+# DB_NAME=...
+# DB_USER=...
+# DB_PASSWORD=...
+# DB_HOST=...
+# DB_PORT=...
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Running locally
 
-### Advanced Configuration
+> Use two terminals: one for backend, one for frontend.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Terminal A — backend (Django)
 
-### Deployment
+```bash
+cd /home/runner/work/spotifywrapped/spotifywrapped/backend
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+No `requirements.txt` (or other pinned dependency file) is currently committed, so install dependencies based on imports/settings:
 
-### `npm run build` fails to minify
+```bash
+pip install "django>=4.2,<5" djangorestframework django-cors-headers django-environ requests google-generativeai psycopg2-binary
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Run migrations and start the server:
+
+```bash
+python manage.py migrate
+python manage.py runserver 127.0.0.1:8000
+```
+
+### Terminal B — frontend (React)
+
+```bash
+cd /home/runner/work/spotifywrapped/spotifywrapped
+npm install
+npm start
+```
+
+App URL: `http://localhost:3000`
+
+## Available scripts
+
+From repository root (`/home/runner/work/spotifywrapped/spotifywrapped`):
+
+- `npm start` — run frontend in development mode
+- `npm run build` — production build output in `build/`
+- `npm test` — run frontend tests via react-scripts
+- `npm run eject` — eject CRA config (irreversible)
+
+## API endpoint overview
+
+Backend project URLs include `path('api/', include('api.urls'))`, so routes below are typically prefixed with `/api`.
+
+| Method | Endpoint (api app route) | Purpose |
+|---|---|---|
+| POST | `/spotify-auth` | Exchange Spotify authorization code for token data |
+| POST | `/save-wrapped` | Save wrap data or update visibility when wrap already exists |
+| GET | `/get-public-wraps` | Return wraps marked public |
+| GET | `/get-wrap/<wrapId>/` | Return one wrap by Spotify user ID |
+| POST | `/get-description` | Generate a Gemini-based music personality description |
+| GET | `/get-user-wraps/<display_name>/` | List wraps for a display name |
+| DELETE | `/delete-wrap/<wrap_id>` | Delete a single wrap by internal ID |
+| POST | `/update-wrap-visibility/<wrap_id>` | Change public/private visibility |
+| DELETE | `/delete-wraps/<display_name>/` | Delete all wraps for a display name |
+
+Example full local URL: `http://127.0.0.1:8000/api/get-public-wraps`
+
+## Testing & building
+
+Frontend:
+
+```bash
+npm test
+npm run build
+```
+
+Backend (if/when backend tests are implemented/updated):
+
+```bash
+cd /home/runner/work/spotifywrapped/spotifywrapped/backend
+python manage.py test
+```
+
+## Privacy & security considerations
+
+- Do **not** commit `.env` files or live credentials.
+- Rotate/revoke any credentials that may already have been committed in repository history.
+- Users must provide their own Spotify and Gemini credentials.
+- Current backend views include CSRF-exempt endpoints intended for local/dev workflows; review and harden before any real deployment.
+
+## Troubleshooting
+
+- **Spotify login redirects fail:** ensure frontend redirect URI and Spotify Dashboard redirect URI match exactly.
+- **Token exchange errors at `/api/spotify-auth`:** verify backend `.env` values (`SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REDIRECT_URI`).
+- **CORS errors from frontend to backend:** backend currently allows `http://localhost:3000`; update CORS settings if using another origin.
+- **Database connection issues:** backend settings currently target PostgreSQL locally; ensure your DB is running/configured or adjust settings for your local environment.
+- **Gemini description errors:** verify `GEMINI_API_KEY` is valid and available to Django runtime.
+
+## Contributing
+
+Contributions are welcome. A safe workflow:
+
+1. Fork and create a feature branch
+2. Make focused changes
+3. Run frontend tests/build locally
+4. Open a pull request with context and screenshots/API notes when relevant
+
+## License / project status
+
+- **License:** No license file is currently present in this repository.
+- **Status:** Active local-development project; no verified production deployment URL is documented.
